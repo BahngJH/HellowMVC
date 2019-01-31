@@ -1,0 +1,303 @@
+<-- 디비생성 -->
+drop table member;
+create table member(
+    memberNum number primary key,
+    memberId varchar2(20) not null unique,
+    memberPw varchar2(300) not null,
+    memberName varchar2(20),
+    address varchar2(50),
+    birth date,
+    phone varchar2(20) not null,
+    email varchar2(20) not null,
+    enrollDate date default sysdate,
+    gender varchar2(3) check(gender in ('남', '여')),
+    isAdmin number default 0,
+    mileage number default 0
+);
+create sequence seq_member start with 1 increment by 1 nocycle nocache;
+
+drop table book;
+create table book(
+    bookName varchar2(40) not null,
+    price number not null,
+    publisher varchar2(40),
+    authorNum number,
+    genre varchar2(10),
+    bookId number primary key,
+    ISBN varchar(20) not null unique,
+    bookImage varchar2(100),
+    bookDate date,
+    bookInfo long,
+    editor varchar2(30),
+    translator varchar2(30),
+    pageNum number,
+    sales number,
+    stock number
+);
+create sequence seq_book start with 1 increment by 1 nocycle nocache;
+
+drop table author;
+create table author(
+    authorId number primary key,
+    authorName varchar(30) not null,
+    authorInfo long not null
+);
+create sequence seq_author start with 1 increment by 1 nocycle nocache;
+
+drop table review;
+create table review(
+memberNum number,
+writeDate date default sysdate,
+grade number not null,
+context varchar2(50) not null,
+bookId number,
+reviewNum number primary key,
+status varchar2(1) default 'Y'
+);
+create sequence seq_review start with 1 increment by 1 nocycle nocache;
+
+drop table subReview;
+create table subReview(
+memberNum number,
+subWriteDate date default sysdate,
+subContext varchar2(50),
+reviewNum number,
+subReviewNum number primary key,
+status varchar2(1) default 'Y'
+);
+create sequence seq_sub_review start with 1 increment by 1 nocycle nocache;
+
+drop table order_book_board;
+create table Order_Book_Board
+(
+    orderBookNum number PRIMARY KEY,
+    memberNum number,
+    orderBookTitle varchar2(100),
+    orderBookDate date default sysdate,
+    orderBookContent long NOT NULL,
+status varchar2(1) default 'Y'
+);
+create sequence seq_order_book start with 1 increment by 1 nocycle nocache;
+
+drop table notice;
+create table Notice
+(
+    noticeNum number PRIMARY KEY,
+    noticeTitle varchar2(100) NOT NULL,
+    noticeContent long,
+    noticeDate date default sysdate,
+status varchar2(1) default 'Y'
+);
+create sequence seq_notice start with 1 increment by 1 nocycle nocache;
+
+drop table order_re;
+create table Order_Re
+(
+    orderReCoNum number PRIMARY KEY,
+    memberNum number,
+    orderBookNum number,
+    orderReContent long NOT NULL,
+    orderReDate date default sysdate,
+status varchar2(1) default 'Y'
+);
+create sequence seq_order_re start with 1 increment by 1 nocycle nocache;
+
+drop table order_sub_re;
+CREATE TABLE order_sub_re (
+    orderSubNum       NUMBER PRIMARY KEY,
+    membernum           NUMBER,
+    orderReNum        NUMBER,
+    orderSubContext   VARCHAR2(100) NOT NULL,
+    orderSubDate       DATE DEFAULT SYSDATE,
+status varchar2(1) default 'Y'
+);
+create sequence seq_order_sub_re start with 1 increment by 1 nocycle nocache;
+
+drop table qna;
+CREATE TABLE qna (
+    qnaNum       NUMBER PRIMARY KEY,
+    membernum     NUMBER,
+    qnaName      VARCHAR2(100) NOT NULL,
+    qnaContext   LONG NOT NULL,
+    qnaDate      DATE DEFAULT SYSDATE,
+status varchar2(1) default 'Y'
+);
+create sequence seq_qna start with 1 increment by 1 nocycle nocache;
+
+drop table qna_re;
+CREATE TABLE qna_re (
+    qnaReNum       NUMBER PRIMARY KEY,
+    membernum        NUMBER,
+    qnaNum          NUMBER,
+    qnaReContext   LONG NOT NULL,
+    qnaReDate      DATE DEFAULT SYSDATE,
+status varchar2(1) default 'Y'
+);
+create sequence seq_qna_re start with 1 increment by 1 nocycle nocache;
+
+drop table qna_sub_re;
+CREATE TABLE QNA_SUB_RE (
+   memberNum number,
+   qnaSubDate date default sysdate,
+   qnaSubContext varchar2(50) NOT NULL,
+   qnaReNum number,
+   qnaSubNum Number PRIMARY KEY,
+status varchar2(1) default 'Y'
+);
+create sequence seq_qna_sub_re start with 1 increment by 1 nocycle nocache;
+
+drop table book_append_list;
+CREATE TABLE BOOK_append_LIST (
+   memberNum number,
+   bookName varchar2(40) NOT NULL,
+   appDate date default sysdate,
+   author varchar2(30),
+   bookDate date,
+   ISBN varchar2(20) NOT NULL,
+   publisher varchar2(40),
+   appCancel char(1) default 0 check (appCancel = 0 OR appCancel = 1),
+   appNum number PRIMARY KEY,
+status varchar2(1) default 'Y'
+);
+create sequence seq_append start with 1 increment by 1 nocycle nocache;
+
+drop table order_list;
+CREATE TABLE ORDER_LIST (
+   memberNum number,
+   orderNum number,
+   bookId number,
+   bookCount number NOT NULL,
+   orderDate date default sysdate,
+   CONSTRAINT ORDER_LIST_PRIMARY_KEY PRIMARY KEY(orderNum, bookId),
+status varchar2(1) default 'Y'
+);
+
+drop table wish_list;
+create table WISH_LIST(
+    wish_No number PRIMARY KEY,
+    memberNum  number,
+    bookId  number,
+    book_Count   number not null
+);
+create sequence seq_wish_list start with 1 increment by 1 nocycle nocache;
+
+drop table mark;
+create table MARK(
+    bookId number ,
+    memberNum number, 
+    CONSTRAINT MARK_PRIMARY_KEY  PRIMARY KEY (bookId,memberNum)
+); 
+
+drop table mileage;
+create table MILEAGE(
+    mileage_No NUMBER primary key,
+    memberNum number,
+    mileateDate date default sysdate,
+    mileage_changeList number
+);
+create sequence seq_mimeage start with 1 increment by 1 nocycle nocache;
+
+drop table sales_rate;
+create table sales_rate(
+saleDate date default sysdate,
+bookId number primary key,
+salesCount number
+);
+
+drop table stock;
+create table stock(
+stockNum number primary key,
+stockDate date default sysdate,
+bookId number
+);
+
+alter table book add
+constraint fk_book_authorNum foreign key (authorNum) references author(authorId);
+
+alter table review add
+constraint fk_review_memberNum foreign key (memberNum) references member(memberNum);
+
+alter table review add
+constraint fk_review_bookId foreign key (bookId) references book(bookId);
+
+alter table sub_review add
+constraint fk_subReview_memberNum foreign key (memberNum) references member(memberNum);
+
+alter table sub_review add
+constraint fk_subReview_reviewNum foreign key (reviewNum) references review(reviewNum);
+
+alter table order_book_board add
+constraint fk_orderBookBoard_memberNum foreign key (memberNum) references member(memberNum);
+
+alter table order_re add
+constraint fk_orderRe_memberNum foreign key (memberNum) references member(memberNum);
+
+alter table order_re add
+constraint fk_orderRE_orderBookNum foreign key (orderBookNum) references order_book_board(orderBookNum);
+
+alter table order_sub_re add
+constraint fk_orderSubRe_memberNum foreign key (memberNum) references member(memberNum);
+
+alter table order_sub_re add
+constraint fk_orderSubRe_orderReNum foreign key (orderReNum) references order_re(orderReCoNum);
+
+alter table qna add
+constraint fk_qna_memberNum foreign key (memberNum) references member(memberNum);
+
+alter table qna_re add
+constraint fk_qnaRe_memberNum foreign key (memberNum) references member(memberNum);
+
+alter table qna_re add
+constraint fk_qnaRe_qna_Num foreign key (qnaNum) references qna(qnaNum);
+
+alter table qna_sub_re add
+constraint fk_qnaSubRe_memberNum foreign key (memberNum) references member(memberNum);
+
+alter table qna_sub_re add
+constraint fk_qnaSubRe_qnaReNum foreign key (qnaReNum) references qna_re(qnaReNum);
+
+alter table book_append_list add
+constraint fk_bookAppendList_memberNum foreign key (memberNum) references member(memberNum);
+
+alter table order_list add
+constraint fk_orderList_memberNum foreign key (memberNum) references member(memberNum);
+
+alter table order_list add
+constraint fk_orderList_bookId foreign key (bookId) references book(bookId);
+
+alter table wish_list add
+constraint fk_wishLIst_memberNum foreign key (memberNum) references member(memberNum);
+
+alter table wish_list add
+constraint fk_wishList_bookId foreign key (bookId) references book(bookId);
+
+alter table mark add
+constraint fk_mark_bookId foreign key (bookId) references book(bookId);
+
+alter table mark add
+constraint fk_mark_memberNum foreign key (memberNum) references member(memberNum);
+
+alter table mileage add
+constraint fk_mileage_memberNum foreign key (memberNum) references member(memberNum);
+
+alter table sales_rate add
+constraint fk_sales_bookId foreign key (bookId) references book(bookId);
+
+alter table stock add
+constraint fk_stock foreign key (bookId) references book(bookId);
+
+commit;
+
+<-- status 추가됨 -->
+alter table review add(status varchar2(1) default 'Y');
+alter table sub_review add(status varchar2(1) default 'Y');
+alter table order_book_board add(status varchar2(1) default 'Y');
+alter table notice add(status varchar2(1) default 'Y');
+alter table order_re add(status varchar2(1) default 'Y');
+alter table order_sub_re add(status varchar2(1) default 'Y');
+alter table qna add(status varchar2(1) default 'Y');
+alter table qna_re add(status varchar2(1) default 'Y');
+alter table qna_sub_re add(status varchar2(1) default 'Y');
+alter table book_append_list add(status varchar2(1) default 'Y');
+alter table order_list add(status varchar2(1) default 'Y');
+commit;
